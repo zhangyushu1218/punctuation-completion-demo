@@ -1,0 +1,11 @@
+# ASR标点预测项目依赖
+# 核心深度学习框架
+torch>=2.13.0
+
+# Hugging Face 生态系统
+transformers>=5.14.0
+datasets>=5.0.0
+
+# 数据处理和科学计算
+numpy>=2.4.0
+scikit-learn>=1.9.0

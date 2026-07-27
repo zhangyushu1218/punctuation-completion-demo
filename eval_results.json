@@ -1,0 +1,66 @@
+[
+  {
+    "timestamp": "2026-07-16 15:10:25",
+    "issues": "顿号优先级不够，导致【京广京沪】之间未插入顿号",
+    "model_name": "hfl/chinese-bert-wwm-ext",
+    "dataset": "SirlyDreamer/THUCNews",
+    "epochs": 3,
+    "batch_size": 16,
+    "learning_rate": 2e-05,
+    "metrics": {
+      "eval_loss": 0.0567,
+      "eval_macro_f1": 0.8402,
+      "eval_char_accuracy": 0.9801,
+      "eval_O_f1": 0.9932,
+      "eval_COMMA_f1": 0.8121,
+      "eval_PERIOD_f1": 0.7742,
+      "eval_DUN_f1": 0.7815,
+      "eval_runtime": 8.4707,
+      "eval_samples_per_second": 590.152,
+      "eval_steps_per_second": 36.951
+    }
+  },
+  {
+    "timestamp": "2026-07-16 15:43:41",
+    "issues": "顿号优先级过高，导致其他位置被错误的插入了顿号",
+    "model_name": "hfl/chinese-bert-wwm-ext",
+    "dataset": "SirlyDreamer/THUCNews",
+    "epochs": 3,
+    "batch_size": 16,
+    "learning_rate": 2e-05,
+    "metrics": {
+      "eval_loss": 0.295692,
+      "eval_macro_f1": 0.754159,
+      "eval_char_accuracy": 0.961568,
+      "eval_O_f1": 0.983881,
+      "eval_COMMA_f1": 0.711903,
+      "eval_PERIOD_f1": 0.741533,
+      "eval_DUN_f1": 0.579318,
+      "eval_runtime": 8.5732,
+      "eval_samples_per_second": 583.096,
+      "eval_steps_per_second": 36.509,
+      "epoch": 3.0
+    }
+  },
+  {
+    "timestamp": "2026-07-16 18:55:07",
+    "model_name": "hfl/chinese-bert-wwm-ext",
+    "dataset": "SirlyDreamer/THUCNews",
+    "epochs": 3,
+    "batch_size": 16,
+    "learning_rate": 2e-05,
+    "metrics": {
+      "eval_loss": 0.156932,
+      "eval_macro_f1": 0.824286,
+      "eval_char_accuracy": 0.976107,
+      "eval_O_f1": 0.991182,
+      "eval_COMMA_f1": 0.793203,
+      "eval_PERIOD_f1": 0.771595,
+      "eval_DUN_f1": 0.741162,
+      "eval_runtime": 8.8604,
+      "eval_samples_per_second": 564.195,
+      "eval_steps_per_second": 35.326,
+      "epoch": 3.0
+    }
+  }
+]

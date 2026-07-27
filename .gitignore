@@ -1,0 +1,37 @@
+.idea
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Model files and checkpoints
+punctuation_model/checkpoint-*/
+*.safetensors
+*.pt
+*.pth
+optimizer.pt
+scaler.pt
+scheduler.pt
+rng_state.pth
+trainer_state.json
+training_args.bin
+
+# Exclude punctuation_best directory from ignore rules
+!punctuation_best/
+!punctuation_best/*.safetensors
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
