@@ -62,5 +62,148 @@
       "eval_steps_per_second": 35.326,
       "epoch": 3.0
     }
+  },
+  {
+    "timestamp": "2026-07-28 09:40:57",
+    "model_name": "hfl/chinese-bert-wwm-ext",
+    "dataset": {
+      "name": "SirlyDreamer/THUCNews",
+      "train_samples": 44983,
+      "val_samples": 4999,
+      "split_ratio": 0.9,
+      "seed": 42
+    },
+    "hyperparameters": {
+      "epochs": 3,
+      "batch_size": 16,
+      "learning_rate": 2e-05,
+      "max_seq_length": 128,
+      "fp16": true,
+      "weight_decay": 0.0,
+      "warmup_ratio": null
+    },
+    "model_architecture": {
+      "total_parameters": 101680132,
+      "trainable_parameters": 101680132,
+      "num_labels": 4,
+      "label2id": {
+        "O": 0,
+        "COMMA": 1,
+        "PERIOD": 2,
+        "DUN": 3
+      }
+    },
+    "class_weights": {
+      "strategy": "sqrt(total / (num_classes * count)) with cap at 5.0",
+      "weights": {
+        "O": 0.5178,
+        "COMMA": 2.3265,
+        "PERIOD": 3.746,
+        "DUN": 5.0
+      },
+      "distribution": {
+        "O": 5205895,
+        "COMMA": 257862,
+        "PERIOD": 99462,
+        "DUN": 19726
+      }
+    },
+    "metrics": {
+      "eval_loss": 0.145086,
+      "eval_macro_f1": 0.821023,
+      "eval_char_accuracy": 0.975658,
+      "eval_O_f1": 0.991074,
+      "eval_COMMA_f1": 0.789102,
+      "eval_PERIOD_f1": 0.771059,
+      "eval_DUN_f1": 0.732857,
+      "eval_runtime": 13.6378,
+      "eval_samples_per_second": 366.554,
+      "eval_steps_per_second": 22.951,
+      "epoch": 3.0
+    },
+    "training_process": {
+      "total_steps": 89,
+      "logs_sample": [
+        {
+          "step": 100,
+          "epoch": 0.0356,
+          "loss": 0.3973,
+          "learning_rate": 1.976529160739687e-05,
+          "grad_norm": 1.8027
+        },
+        {
+          "step": 200,
+          "epoch": 0.0711,
+          "loss": 0.2169,
+          "learning_rate": 1.9528212422949266e-05,
+          "grad_norm": 1.8019
+        },
+        {
+          "step": 300,
+          "epoch": 0.1067,
+          "loss": 0.2028,
+          "learning_rate": 1.929113323850166e-05,
+          "grad_norm": 2.0719
+        },
+        {
+          "step": 400,
+          "epoch": 0.1422,
+          "loss": 0.1923,
+          "learning_rate": 1.9054054054054057e-05,
+          "grad_norm": 1.9405
+        },
+        {
+          "step": 500,
+          "epoch": 0.1778,
+          "loss": 0.1864,
+          "learning_rate": 1.881697486960645e-05,
+          "grad_norm": 1.5076
+        },
+        {
+          "step": 600,
+          "epoch": 0.2134,
+          "loss": 0.185,
+          "learning_rate": 1.8579895685158843e-05,
+          "grad_norm": 2.4014
+        },
+        {
+          "step": 700,
+          "epoch": 0.2489,
+          "loss": 0.1752,
+          "learning_rate": 1.834281650071124e-05,
+          "grad_norm": 1.9403
+        },
+        {
+          "step": 800,
+          "epoch": 0.2845,
+          "loss": 0.1725,
+          "learning_rate": 1.8105737316263633e-05,
+          "grad_norm": 2.0601
+        },
+        {
+          "step": 900,
+          "epoch": 0.3201,
+          "loss": 0.1769,
+          "learning_rate": 1.786865813181603e-05,
+          "grad_norm": 0.9253
+        },
+        {
+          "step": 1000,
+          "epoch": 0.3556,
+          "loss": 0.1741,
+          "learning_rate": 1.763157894736842e-05,
+          "grad_norm": 1.0633
+        }
+      ],
+      "logs_count": 89
+    },
+    "training_info": {
+      "best_epoch": 4,
+      "duration_seconds": 1028.67,
+      "duration_minutes": 17.14,
+      "device": "cuda",
+      "cuda_available": true,
+      "log_file": "./logs\\training_20260728_092335.log"
+    }
   }
 ]

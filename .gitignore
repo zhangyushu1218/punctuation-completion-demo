@@ -29,8 +29,8 @@ training_args.bin
 !punctuation_best/*.safetensors
 
 # Logs
-*.log
-logs/
+!*.log
+!logs/
 
 # OS files
 .DS_Store
