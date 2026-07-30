@@ -6,11 +6,7 @@ from datetime import datetime
 from datasets import load_dataset
 from transformers import TrainingArguments, Trainer, DataCollatorForTokenClassification
 from training_logger import setup_training_logger, TrainingLogCallback
-from utils import (
-    clean_raw_text,
-    tokenize_and_align_labels,
-    compute_metrics,
-    load_model_and_tokenizer,
+from config import (
     DATASET_NAME,
     BATCH_SIZE,
     EPOCHS,
@@ -21,8 +17,20 @@ from utils import (
     DEVICE,
     MAX_SEQ_LEN,
     MODEL_NAME,
-    LABELS
+    LABELS,
+    USE_SLIDING_WINDOW,
+    SLIDING_WINDOW_STRIDE
 )
+from utils import (
+    compute_metrics,
+    load_model_and_tokenizer,
+    prepare_dataset,
+)
+from data_processor import clean_raw_text
+
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+os.environ["TRANSFORMERS_OFFLINE"] = "0" # 允许联网下载
+os.environ["HF_HUB_OFFLINE"] = "0" # 然后再import其他模块
 
 
 def train_model():
@@ -38,7 +46,7 @@ def train_model():
 
     # 加载数据集
     logger.info(f"\n【数据准备】加载THUCNews数据集...")
-    dataset = load_dataset(DATASET_NAME, split="train[:50000]")
+    dataset = load_dataset(DATASET_NAME, split="train[:100000]")
 
     def filter_func(sample):
         t = clean_raw_text(sample["text"])
@@ -64,11 +72,28 @@ def train_model():
     logger.info(f"可训练参数量: {trainable_params / 1e6:.2f}M ({trainable_params:,})")
 
     logger.info(f"\n【数据处理】数据预处理与tokenization...")
-    tokenize_fn = lambda x: tokenize_and_align_labels(x, tokenizer)
-    train_tokenized = train_ds.map(tokenize_fn, batched=True, remove_columns=["text"])
-    val_tokenized = val_ds.map(tokenize_fn, batched=True, remove_columns=["text"])
-    train_tokenized.set_format("python", columns=["input_ids", "attention_mask", "labels"])
-    val_tokenized.set_format("python", columns=["input_ids", "attention_mask", "labels"])
+    
+    if USE_SLIDING_WINDOW:
+        logger.info("启用滑动窗口处理长文本")
+        logger.info(f"滑动步长: {SLIDING_WINDOW_STRIDE}")
+        
+        # 使用通用函数准备数据集
+        train_tokenized = prepare_dataset(train_ds, tokenizer, use_sliding_window=True, stride=SLIDING_WINDOW_STRIDE)
+        val_tokenized = prepare_dataset(val_ds, tokenizer, use_sliding_window=True, stride=SLIDING_WINDOW_STRIDE)
+        
+        logger.info(f"原始训练样本数: {len(train_ds)}")
+        logger.info(f"滑动窗口后训练样本数: {len(train_tokenized)}")
+        logger.info(f"原始验证样本数: {len(val_ds)}")
+        logger.info(f"滑动窗口后验证样本数: {len(val_tokenized)}")
+    else:
+        logger.info("禁用滑动窗口，直接截断长文本")
+        
+        # 使用通用函数准备数据集
+        train_tokenized = prepare_dataset(train_ds, tokenizer, use_sliding_window=False)
+        val_tokenized = prepare_dataset(val_ds, tokenizer, use_sliding_window=False)
+        
+        logger.info(f"训练集样本数: {len(train_tokenized)}")
+        logger.info(f"验证集样本数: {len(val_tokenized)}")
 
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
     logger.info(f"最大序列长度: {MAX_SEQ_LEN}")

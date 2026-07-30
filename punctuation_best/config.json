@@ -4,11 +4,11 @@
     "BertForTokenClassification"
   ],
   "attention_probs_dropout_prob": 0.1,
-  "bos_token_id": null,
+  "bos_token_id": 0,
   "classifier_dropout": null,
   "directionality": "bidi",
   "dtype": "float32",
-  "eos_token_id": null,
+  "eos_token_id": 2,
   "hidden_act": "gelu",
   "hidden_dropout_prob": 0.1,
   "hidden_size": 768,
@@ -16,16 +16,26 @@
     "0": "O",
     "1": "COMMA",
     "2": "PERIOD",
-    "3": "DUN"
+    "3": "DUN",
+    "4": "COLON",
+    "5": "QUOTE_LEFT",
+    "6": "QUOTE_RIGHT",
+    "7": "BRACKET_LEFT",
+    "8": "BRACKET_RIGHT"
   },
   "initializer_range": 0.02,
   "intermediate_size": 3072,
   "is_decoder": false,
   "label2id": {
+    "BRACKET_LEFT": 7,
+    "BRACKET_RIGHT": 8,
+    "COLON": 4,
     "COMMA": 1,
     "DUN": 3,
     "O": 0,
-    "PERIOD": 2
+    "PERIOD": 2,
+    "QUOTE_LEFT": 5,
+    "QUOTE_RIGHT": 6
   },
   "layer_norm_eps": 1e-12,
   "max_position_embeddings": 512,
@@ -40,7 +50,7 @@
   "pooler_size_per_head": 128,
   "pooler_type": "first_token_transform",
   "tie_word_embeddings": true,
-  "transformers_version": "5.14.0",
+  "transformers_version": "5.14.1",
   "type_vocab_size": 2,
   "use_cache": false,
   "vocab_size": 21128

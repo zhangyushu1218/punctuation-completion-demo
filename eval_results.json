@@ -44,6 +44,7 @@
   },
   {
     "timestamp": "2026-07-16 18:55:07",
+    "issues": "没有记录训练日志",
     "model_name": "hfl/chinese-bert-wwm-ext",
     "dataset": "SirlyDreamer/THUCNews",
     "epochs": 3,
@@ -65,6 +66,7 @@
   },
   {
     "timestamp": "2026-07-28 09:40:57",
+    "issues": "仅支持逗号、句号、顿号，但识别能力较强",
     "model_name": "hfl/chinese-bert-wwm-ext",
     "dataset": {
       "name": "SirlyDreamer/THUCNews",
@@ -204,6 +206,529 @@
       "device": "cuda",
       "cuda_available": true,
       "log_file": "./logs\\training_20260728_092335.log"
+    }
+  },
+  {
+    "timestamp": "2026-07-30 11:04:35",
+    "issues": "可标注符号扩展到16个，但模型性能极差",
+    "model_name": "hfl/chinese-bert-wwm-ext",
+    "dataset": {
+      "name": "SirlyDreamer/THUCNews",
+      "train_samples": 89976,
+      "val_samples": 9998,
+      "split_ratio": 0.9,
+      "seed": 42
+    },
+    "hyperparameters": {
+      "epochs": 3,
+      "batch_size": 16,
+      "learning_rate": 2e-05,
+      "max_seq_length": 128,
+      "fp16": true,
+      "weight_decay": 0.0,
+      "warmup_ratio": null
+    },
+    "model_architecture": {
+      "total_parameters": 101690129,
+      "trainable_parameters": 101690129,
+      "num_labels": 17,
+      "label2id": {
+        "O": 0,
+        "COMMA": 1,
+        "PERIOD": 2,
+        "DUN": 3,
+        "EXCLAMATION": 4,
+        "QUESTION": 5,
+        "COLON": 6,
+        "SEMICOLON": 7,
+        "QUOTE_LEFT": 8,
+        "QUOTE_RIGHT": 9,
+        "TILDE": 10,
+        "PAREN_LEFT": 11,
+        "PAREN_RIGHT": 12,
+        "BRACKET_LEFT": 13,
+        "BRACKET_RIGHT": 14,
+        "BOOK_LEFT": 15,
+        "BOOK_RIGHT": 16
+      }
+    },
+    "class_weights": {
+      "strategy": "sqrt(total / (num_classes * count)) with cap at 5.0",
+      "weights": {
+        "O": 0.2518,
+        "COMMA": 1.1842,
+        "PERIOD": 1.9633,
+        "DUN": 4.2182,
+        "EXCLAMATION": 5.0,
+        "QUESTION": 5.0,
+        "COLON": 5.0,
+        "SEMICOLON": 5.0,
+        "QUOTE_LEFT": 4.0018,
+        "QUOTE_RIGHT": 4.508,
+        "TILDE": 5.0,
+        "PAREN_LEFT": 5.0,
+        "PAREN_RIGHT": 5.0,
+        "BRACKET_LEFT": 5.0,
+        "BRACKET_RIGHT": 5.0,
+        "BOOK_LEFT": 5.0,
+        "BOOK_RIGHT": 5.0
+      },
+      "distribution": {
+        "O": 10370477,
+        "COMMA": 468771,
+        "PERIOD": 170552,
+        "DUN": 36948,
+        "EXCLAMATION": 4117,
+        "QUESTION": 6128,
+        "COLON": 22338,
+        "SEMICOLON": 4530,
+        "QUOTE_LEFT": 41051,
+        "QUOTE_RIGHT": 32350,
+        "TILDE": 20,
+        "PAREN_LEFT": 1104,
+        "PAREN_RIGHT": 1013,
+        "BRACKET_LEFT": 180,
+        "BRACKET_RIGHT": 154,
+        "BOOK_LEFT": 8301,
+        "BOOK_RIGHT": 8083
+      }
+    },
+    "metrics": {
+      "eval_loss": 0.619339,
+      "eval_macro_f1": 0.304416,
+      "eval_char_accuracy": 0.869687,
+      "eval_O_f1": 0.932352,
+      "eval_COMMA_f1": 0.463209,
+      "eval_PERIOD_f1": 0.356556,
+      "eval_DUN_f1": 0.28689,
+      "eval_EXCLAMATION_f1": 0.124019,
+      "eval_QUESTION_f1": 0.263325,
+      "eval_COLON_f1": 0.252829,
+      "eval_SEMICOLON_f1": 0.175508,
+      "eval_QUOTE_LEFT_f1": 0.235529,
+      "eval_QUOTE_RIGHT_f1": 0.19581,
+      "eval_TILDE_f1": 0.0,
+      "eval_PAREN_LEFT_f1": 0.319277,
+      "eval_PAREN_RIGHT_f1": 0.251944,
+      "eval_BRACKET_LEFT_f1": 0.275862,
+      "eval_BRACKET_RIGHT_f1": 0.26087,
+      "eval_BOOK_LEFT_f1": 0.404787,
+      "eval_BOOK_RIGHT_f1": 0.3763,
+      "eval_runtime": 16.7693,
+      "eval_samples_per_second": 596.208,
+      "eval_steps_per_second": 37.27,
+      "epoch": 3.0
+    },
+    "training_process": {
+      "total_steps": 173,
+      "logs_sample": [
+        {
+          "step": 100,
+          "epoch": 0.0178,
+          "loss": 1.4163,
+          "learning_rate": 1.9882645803698438e-05,
+          "grad_norm": 2.8637
+        },
+        {
+          "step": 200,
+          "epoch": 0.0356,
+          "loss": 1.0983,
+          "learning_rate": 1.9764106211474632e-05,
+          "grad_norm": 3.2758
+        },
+        {
+          "step": 300,
+          "epoch": 0.0533,
+          "loss": 1.0122,
+          "learning_rate": 1.964556661925083e-05,
+          "grad_norm": 3.8735
+        },
+        {
+          "step": 400,
+          "epoch": 0.0711,
+          "loss": 0.983,
+          "learning_rate": 1.9527027027027027e-05,
+          "grad_norm": 3.1746
+        },
+        {
+          "step": 500,
+          "epoch": 0.0889,
+          "loss": 0.92,
+          "learning_rate": 1.9408487434803225e-05,
+          "grad_norm": 3.9602
+        },
+        {
+          "step": 600,
+          "epoch": 0.1067,
+          "loss": 0.8875,
+          "learning_rate": 1.9289947842579422e-05,
+          "grad_norm": 4.3932
+        },
+        {
+          "step": 700,
+          "epoch": 0.1245,
+          "loss": 0.8761,
+          "learning_rate": 1.917140825035562e-05,
+          "grad_norm": 3.8133
+        },
+        {
+          "step": 800,
+          "epoch": 0.1422,
+          "loss": 0.8639,
+          "learning_rate": 1.9052868658131818e-05,
+          "grad_norm": 4.0752
+        },
+        {
+          "step": 900,
+          "epoch": 0.16,
+          "loss": 0.859,
+          "learning_rate": 1.8934329065908015e-05,
+          "grad_norm": 3.1779
+        },
+        {
+          "step": 1000,
+          "epoch": 0.1778,
+          "loss": 0.8513,
+          "learning_rate": 1.8815789473684213e-05,
+          "grad_norm": 3.5726
+        }
+      ],
+      "logs_count": 173
+    },
+    "training_info": {
+      "best_epoch": 4,
+      "duration_seconds": 1653.81,
+      "duration_minutes": 27.56,
+      "device": "cuda",
+      "cuda_available": true,
+      "log_file": "./logs\\training_20260730_103644.log"
+    }
+  },
+  {
+    "timestamp": "2026-07-30 14:18:10",
+    "issues": "将部分偏僻符号归纳为常见符号训练，虽然牺牲了部分标点符号的识别能力，但泛化能力提高了，语义也没太大影响",
+    "model_name": "hfl/chinese-bert-wwm-ext",
+    "dataset": {
+      "name": "SirlyDreamer/THUCNews",
+      "train_samples": 89976,
+      "val_samples": 9998,
+      "split_ratio": 0.9,
+      "seed": 42
+    },
+    "hyperparameters": {
+      "epochs": 5,
+      "batch_size": 16,
+      "learning_rate": 1e-05,
+      "max_seq_length": 128,
+      "fp16": true,
+      "weight_decay": 0.0,
+      "warmup_ratio": null
+    },
+    "model_architecture": {
+      "total_parameters": 101683977,
+      "trainable_parameters": 101683977,
+      "num_labels": 9,
+      "label2id": {
+        "O": 0,
+        "COMMA": 1,
+        "PERIOD": 2,
+        "DUN": 3,
+        "COLON": 4,
+        "QUOTE_LEFT": 5,
+        "QUOTE_RIGHT": 6,
+        "BRACKET_LEFT": 7,
+        "BRACKET_RIGHT": 8
+      }
+    },
+    "class_weights": {
+      "strategy": "sqrt(total / (num_classes * count)) with cap at 5.0",
+      "weights": {
+        "O": 0.3469,
+        "COMMA": 1.5631,
+        "PERIOD": 2.5265,
+        "DUN": 5.0,
+        "COLON": 5.0,
+        "QUOTE_LEFT": 5.0,
+        "QUOTE_RIGHT": 5.0,
+        "BRACKET_LEFT": 5.0,
+        "BRACKET_RIGHT": 5.0
+      },
+      "distribution": {
+        "O": 10318872,
+        "COMMA": 508274,
+        "PERIOD": 194539,
+        "DUN": 41718,
+        "COLON": 19699,
+        "QUOTE_LEFT": 45724,
+        "QUOTE_RIGHT": 27714,
+        "BRACKET_LEFT": 10371,
+        "BRACKET_RIGHT": 9206
+      }
+    },
+    "metrics": {
+      "eval_loss": 0.244587,
+      "eval_macro_f1": 0.705854,
+      "eval_char_accuracy": 0.96595,
+      "eval_O_f1": 0.986991,
+      "eval_COMMA_f1": 0.787228,
+      "eval_PERIOD_f1": 0.761948,
+      "eval_DUN_f1": 0.71302,
+      "eval_COLON_f1": 0.641069,
+      "eval_QUOTE_LEFT_f1": 0.478794,
+      "eval_QUOTE_RIGHT_f1": 0.475564,
+      "eval_BRACKET_LEFT_f1": 0.762168,
+      "eval_BRACKET_RIGHT_f1": 0.745905,
+      "eval_runtime": 16.8037,
+      "eval_samples_per_second": 594.988,
+      "eval_steps_per_second": 37.194,
+      "epoch": 5.0
+    },
+    "training_process": {
+      "total_steps": 288,
+      "logs_sample": [
+        {
+          "step": 100,
+          "epoch": 0.0178,
+          "loss": 0.9036,
+          "learning_rate": 9.964793741109531e-06,
+          "grad_norm": 2.4585
+        },
+        {
+          "step": 200,
+          "epoch": 0.0356,
+          "loss": 0.5146,
+          "learning_rate": 9.92923186344239e-06,
+          "grad_norm": 3.7882
+        },
+        {
+          "step": 300,
+          "epoch": 0.0533,
+          "loss": 0.4341,
+          "learning_rate": 9.89366998577525e-06,
+          "grad_norm": 3.2666
+        },
+        {
+          "step": 400,
+          "epoch": 0.0711,
+          "loss": 0.4139,
+          "learning_rate": 9.85810810810811e-06,
+          "grad_norm": 2.8459
+        },
+        {
+          "step": 500,
+          "epoch": 0.0889,
+          "loss": 0.3696,
+          "learning_rate": 9.822546230440968e-06,
+          "grad_norm": 3.7006
+        },
+        {
+          "step": 600,
+          "epoch": 0.1067,
+          "loss": 0.3583,
+          "learning_rate": 9.786984352773828e-06,
+          "grad_norm": 4.4303
+        },
+        {
+          "step": 700,
+          "epoch": 0.1245,
+          "loss": 0.3491,
+          "learning_rate": 9.751422475106687e-06,
+          "grad_norm": 3.0035
+        },
+        {
+          "step": 800,
+          "epoch": 0.1422,
+          "loss": 0.3387,
+          "learning_rate": 9.715860597439546e-06,
+          "grad_norm": 3.0586
+        },
+        {
+          "step": 900,
+          "epoch": 0.16,
+          "loss": 0.3451,
+          "learning_rate": 9.680298719772406e-06,
+          "grad_norm": 2.5831
+        },
+        {
+          "step": 1000,
+          "epoch": 0.1778,
+          "loss": 0.3281,
+          "learning_rate": 9.644736842105263e-06,
+          "grad_norm": 3.2397
+        }
+      ],
+      "logs_count": 288
+    },
+    "training_info": {
+      "best_epoch": 6,
+      "duration_seconds": 2728.6,
+      "duration_minutes": 45.48,
+      "device": "cuda",
+      "cuda_available": true,
+      "log_file": "./logs\\training_20260730_133225.log"
+    }
+  },
+  {
+    "timestamp": "2026-07-30 18:08:01",
+    "model_name": "hfl/chinese-roberta-wwm-ext",
+    "dataset": {
+      "name": "SirlyDreamer/THUCNews",
+      "train_samples": 89976,
+      "val_samples": 9998,
+      "split_ratio": 0.9,
+      "seed": 42
+    },
+    "hyperparameters": {
+      "epochs": 3,
+      "batch_size": 32,
+      "learning_rate": 2e-05,
+      "max_seq_length": 512,
+      "fp16": true,
+      "weight_decay": 0.0,
+      "warmup_ratio": null
+    },
+    "model_architecture": {
+      "total_parameters": 101683977,
+      "trainable_parameters": 101683977,
+      "num_labels": 9,
+      "label2id": {
+        "O": 0,
+        "COMMA": 1,
+        "PERIOD": 2,
+        "DUN": 3,
+        "COLON": 4,
+        "QUOTE_LEFT": 5,
+        "QUOTE_RIGHT": 6,
+        "BRACKET_LEFT": 7,
+        "BRACKET_RIGHT": 8
+      }
+    },
+    "class_weights": {
+      "strategy": "sqrt(total / (num_classes * count)) with cap at 5.0",
+      "weights": {
+        "O": 0.3486,
+        "COMMA": 1.4895,
+        "PERIOD": 2.3681,
+        "DUN": 5.0,
+        "COLON": 5.0,
+        "QUOTE_LEFT": 4.759,
+        "QUOTE_RIGHT": 5.0,
+        "BRACKET_LEFT": 5.0,
+        "BRACKET_RIGHT": 5.0
+      },
+      "distribution": {
+        "O": 36542222,
+        "COMMA": 2001068,
+        "PERIOD": 791655,
+        "DUN": 161857,
+        "COLON": 70685,
+        "QUOTE_LEFT": 196024,
+        "QUOTE_RIGHT": 144993,
+        "BRACKET_LEFT": 25535,
+        "BRACKET_RIGHT": 22647
+      }
+    },
+    "metrics": {
+      "eval_loss": 0.225823,
+      "eval_macro_f1": 0.728334,
+      "eval_char_accuracy": 0.965027,
+      "eval_O_f1": 0.987091,
+      "eval_COMMA_f1": 0.793702,
+      "eval_PERIOD_f1": 0.761112,
+      "eval_DUN_f1": 0.681288,
+      "eval_COLON_f1": 0.660806,
+      "eval_QUOTE_LEFT_f1": 0.56663,
+      "eval_QUOTE_RIGHT_f1": 0.609896,
+      "eval_BRACKET_LEFT_f1": 0.768498,
+      "eval_BRACKET_RIGHT_f1": 0.725985,
+      "eval_runtime": 32.8066,
+      "eval_samples_per_second": 304.755,
+      "eval_steps_per_second": 9.541,
+      "epoch": 3.0
+    },
+    "training_process": {
+      "total_steps": 89,
+      "logs_sample": [
+        {
+          "step": 100,
+          "epoch": 0.0356,
+          "loss": 0.769,
+          "learning_rate": 1.97724039829303e-05,
+          "grad_norm": 1.4079
+        },
+        {
+          "step": 200,
+          "epoch": 0.0711,
+          "loss": 0.3748,
+          "learning_rate": 1.9535324798482694e-05,
+          "grad_norm": 1.1125
+        },
+        {
+          "step": 300,
+          "epoch": 0.1067,
+          "loss": 0.3332,
+          "learning_rate": 1.929824561403509e-05,
+          "grad_norm": 0.8685
+        },
+        {
+          "step": 400,
+          "epoch": 0.1422,
+          "loss": 0.3144,
+          "learning_rate": 1.9061166429587484e-05,
+          "grad_norm": 1.1275
+        },
+        {
+          "step": 500,
+          "epoch": 0.1778,
+          "loss": 0.3033,
+          "learning_rate": 1.882408724513988e-05,
+          "grad_norm": 1.019
+        },
+        {
+          "step": 600,
+          "epoch": 0.2134,
+          "loss": 0.2994,
+          "learning_rate": 1.8587008060692274e-05,
+          "grad_norm": 0.9002
+        },
+        {
+          "step": 700,
+          "epoch": 0.2489,
+          "loss": 0.2893,
+          "learning_rate": 1.8349928876244666e-05,
+          "grad_norm": 0.9121
+        },
+        {
+          "step": 800,
+          "epoch": 0.2845,
+          "loss": 0.2799,
+          "learning_rate": 1.811284969179706e-05,
+          "grad_norm": 0.8256
+        },
+        {
+          "step": 900,
+          "epoch": 0.3201,
+          "loss": 0.2825,
+          "learning_rate": 1.7875770507349456e-05,
+          "grad_norm": 1.0633
+        },
+        {
+          "step": 1000,
+          "epoch": 0.3556,
+          "loss": 0.2815,
+          "learning_rate": 1.763869132290185e-05,
+          "grad_norm": 1.1455
+        }
+      ],
+      "logs_count": 89
+    },
+    "training_info": {
+      "best_epoch": 3,
+      "duration_seconds": 1655.37,
+      "duration_minutes": 27.59,
+      "device": "cuda",
+      "cuda_available": true,
+      "log_file": "./logs/training_20260730_173953.log"
     }
   }
 ]

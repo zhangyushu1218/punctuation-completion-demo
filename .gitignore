@@ -11,6 +11,7 @@ ENV/
 dist/
 build/
 *.egg
+__test__/
 
 # Model files and checkpoints
 punctuation_model/checkpoint-*/
@@ -25,8 +26,8 @@ trainer_state.json
 training_args.bin
 
 # Exclude punctuation_best directory from ignore rules
-!punctuation_best/
-!punctuation_best/*.safetensors
+punctuation_best_phase_1
+chinese-bert-wwm-ext
 
 # Logs
 !*.log

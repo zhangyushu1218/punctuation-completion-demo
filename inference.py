@@ -1,6 +1,7 @@
+from config import MODEL_NAME, RESUME_CHECKPOINT
 from utils import (
     infer_punctuation,
-    load_model_and_tokenizer, post_process_punctuation
+    load_model_and_tokenizer
 )
 
 
@@ -18,7 +19,7 @@ def inference_model():
         "今天早上出门去公园散步看到很多老人打太极还有小朋友放风筝",
         "机器学习深度学习大模型自然语言处理计算机视觉多模态技术快速发展",
         "苹果香蕉橘子葡萄西瓜都是夏季常见水果口感清甜汁水丰富",
-        "7月1日起全国铁路实行新列车运行图图定旅客列车增至12174列货物列车增至23975列调图重点优化中西部地区高铁网络新增动车组58列并升级京广京沪等干线16列普速列车"
+        "7月1日起全国铁路实行新列车运行图图定旅客列车增至12174列货物列车增至23975列调度重点优化中西部地区高铁网络新增动车组58列并升级京广京沪等干线16列普速列车"
     ]
 
     print("\n===== ASR无标点文本自动标点推理示例 =====")

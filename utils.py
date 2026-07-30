@@ -1,82 +1,39 @@
-import re
 import torch
 import numpy as np
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from sklearn.metrics import f1_score, classification_report
 import os
-
-# ===================== 全局配置 =====================
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODEL_NAME = "hfl/chinese-bert-wwm-ext"  # 110M < 150M
-RESUME_CHECKPOINT = "./punctuation_best"  # 纯模型权重，用于加载模型初始化，当设为空则从零初始化
-TRAIN_CHECKPOINT = "./punctuation_model/checkpoint-xxx"  # 训练断点，仅续训用
-DATASET_NAME = "SirlyDreamer/THUCNews"
-MAX_SEQ_LEN = 128
-BATCH_SIZE = 16
-EPOCHS = 3
-LEARNING_RATE = 2e-5
-
-# 标点标签映射
-LABELS = ["O", "COMMA", "PERIOD", "DUN"]
-LABEL2ID = {lab: i for i, lab in enumerate(LABELS)}
-ID2LABEL = {i: lab for i, lab in enumerate(LABELS)}
-NUM_LABELS = len(LABELS)
-
-# 目标标点符号
-PUNCT_MAP = {
-    "COMMA": "，",
-    "PERIOD": "。",
-    "DUN": "、"
-}
-TARGET_PUNCTS = set(["，", "。", "、"])
-
-
-def clean_raw_text(text: str) -> str:
-    """清洗原始新闻文本，保留汉字+目标标点，剔除其他符号"""
-    text = re.sub(r"[^\u4e00-\u9fa5a-zA-Z0-9，。、]", "", text)
-    text = re.sub(r"([，。、])+", r"\1", text)
-    return text.strip()
-
-
-def build_punct_label_sequence(text: str):
-    """
-    输入带标点文本，输出：无标点文本 + 对应标签序列
-    例："今天，天气好。" -> src="今天天气好", label=["O","O","COMMA","O","O","O","PERIOD"]
-    """
-    src_chars = []
-    label_seq = []
-    i = 0
-    while i < len(text):
-        char = text[i]
-        if char in TARGET_PUNCTS:
-            if len(src_chars) > 0:
-                last_idx = len(src_chars) - 1
-                punct_label = [k for k, v in PUNCT_MAP.items() if v == char][0]
-                label_seq[last_idx] = punct_label
-            i += 1
-        else:
-            src_chars.append(char)
-            label_seq.append("O")
-            i += 1
-    src_text = "".join(src_chars) if src_chars else "无"
-    if not label_seq:
-        label_seq = ["O"]
-    return src_text, label_seq
+from config import (
+    DEVICE,
+    MODEL_NAME,
+    RESUME_CHECKPOINT,
+    MAX_SEQ_LEN,
+    LABELS,
+    LABEL2ID,
+    ID2LABEL,
+    NUM_LABELS,
+    USE_SLIDING_WINDOW,
+    SLIDING_WINDOW_STRIDE
+)
+from data_processor import (
+    batch_process_samples,
+    PUNCT_MAP, clean_raw_text, build_punct_label_sequence, PunctuationDataset,
+)
 
 
 def tokenize_and_align_labels(examples, tokenizer):
-    """将文本转换为token并对齐标签"""
-    batch_src = []
-    batch_char_tags = []
-
-    for raw_text in examples["text"]:
-        clean_t = clean_raw_text(raw_text)
-        src, tag_list = build_punct_label_sequence(clean_t)
-        batch_src.append(src)
-        batch_char_tags.append(tag_list)
-
+    """将文本转换为token并对齐标签（支持滑动窗口）"""
+    # 使用数据处理器批量处理样本（包含滑动窗口）
+    all_texts, all_labels = batch_process_samples(
+        examples, 
+        max_seq_len=MAX_SEQ_LEN,
+        use_sliding_window=USE_SLIDING_WINDOW,
+        stride=SLIDING_WINDOW_STRIDE
+    )
+    
+    # Tokenizer 处理
     token_out = tokenizer(
-        batch_src,
+        all_texts,
         truncation=True,
         max_length=MAX_SEQ_LEN,
         padding="max_length",
@@ -85,8 +42,8 @@ def tokenize_and_align_labels(examples, tokenizer):
     offset_list = token_out.pop("offset_mapping")
     all_label_ids = []
 
-    for idx in range(len(batch_src)):
-        char_tags = batch_char_tags[idx]
+    for idx in range(len(all_texts)):
+        char_tags = all_labels[idx]
         offsets = offset_list[idx]
         label_ids = []
         for (start, end) in offsets:
@@ -160,7 +117,7 @@ def load_model_and_tokenizer():
             label2id=LABEL2ID
         ).to(DEVICE)
     else:
-        print("未检测到训练权重，从零初始化预训练BERT微调")
+        print("未检测到训练权重，从零初始化预训练模型微调")
         model = AutoModelForTokenClassification.from_pretrained(
             MODEL_NAME,
             num_labels=NUM_LABELS,
@@ -205,62 +162,38 @@ def infer_punctuation(raw_no_punc: str, model, tokenizer):
     
     return result
 
-
-def post_process_punctuation(text: str) -> str:
+def prepare_dataset(dataset, tokenizer, use_sliding_window=True, stride=256):
     """
-    后处理标点符号，修复常见模式
+    准备数据集（支持滑动窗口）
 
-    规则：
-    1. 修正数字后的顿号（12174列、货物 -> 12174列，货物）- 优先级最高
-    2. 修复铁路干线名称（京、广、京、沪 -> 京广、京沪）
-    3. 移除单字后的顿号（如：中、西部 -> 中西部）
+    Args:
+        dataset: HuggingFace Dataset对象
+        tokenizer: HuggingFace tokenizer
+        use_sliding_window: 是否使用滑动窗口
+        stride: 滑动步长
+
+    Returns:
+        处理后的Dataset对象或PunctuationDataset对象
     """
-    import re
+    if use_sliding_window:
+        # 使用滑动窗口处理
+        texts = []
+        labels = []
+        for sample in dataset:
+            clean_t = clean_raw_text(sample["text"])
+            src_text, label_seq = build_punct_label_sequence(clean_t)
+            texts.append(src_text)
+            labels.append(label_seq)
 
-    # 规则1: 先修正"数量词 + 顿号 + 名词"的错误（应该是逗号）- 优先级最高
-    # 例如："12174列、货物" -> "12174列，货物"
-    # 必须在其他规则之前执行，避免顿号被提前移除
-    number_dunhao = r'(\d+[\u4e00-\u9fa5]*)、([\u4e00-\u9fa5])'
-    text = re.sub(number_dunhao, r'\1，\2', text)
-
-    # 规则2: 处理铁路干线名称模式
-    # 模式1: 带顿号的省份简称序列 "京、广、京、沪" -> "京广、京沪"
-    railway_with_dunhao = r'([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼])、([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼])、([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼])、([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼])'
-    
-    def replace_railway_with_dunhao(match):
-        """将'京、广、京、沪'转换为'京广、京沪'"""
-        return f"{match.group(1)}{match.group(2)}、{match.group(3)}{match.group(4)}"
-    
-    text = re.sub(railway_with_dunhao, replace_railway_with_dunhao, text)
-    
-    # 模式2: 已经合并的铁路干线名称 "京广京沪" -> "京广、京沪"
-    # 使用边界确保只匹配4个连续的省份简称字符
-    railway_pattern = r'(?<![京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼])([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼]{2})([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼]{2})(?![京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼])'
-    
-    def replace_railway(match):
-        """将'京广京沪'转换为'京广、京沪'"""
-        return f"{match.group(1)}、{match.group(2)}"
-    
-    text = re.sub(railway_pattern, replace_railway, text)
-
-    # 规则3: 移除单字之间的顿号（过度预测的顿号）
-    # 匹配模式：单字 + 顿号 + 单字，如"中、西"、"东、西"
-    single_char_dunhao = r'([\u4e00-\u9fa5])、([\u4e00-\u9fa5])(?=[\u4e00-\u9fa5]|$)'
-
-    def fix_single_char_dunhao(match):
-        """移除单字之间的顿号"""
-        char1 = match.group(1)
-        char2 = match.group(2)
-
-        # 检查是否是常见的单字省份简称组合（应该合并）
-        province_chars = set('京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼')
-        if char1 in province_chars and char2 in province_chars:
-            # 这是省份简称，应该合并（如"京广"、"京沪"）
-            return f"{char1}{char2}"
-
-        # 其他单字组合也默认合并（避免"中、西部"这样的错误）
-        return f"{char1}{char2}"
-
-    text = re.sub(single_char_dunhao, fix_single_char_dunhao, text)
-
-    return text
+        processed_dataset = PunctuationDataset(
+            texts, labels, tokenizer,
+            max_seq_len=MAX_SEQ_LEN,
+            stride=stride
+        )
+        return processed_dataset
+    else:
+        # 不使用滑动窗口，直接截断
+        tokenize_fn = lambda x: tokenize_and_align_labels(x, tokenizer)
+        processed_dataset = dataset.map(tokenize_fn, batched=True, remove_columns=["text"])
+        processed_dataset.set_format("python", columns=["input_ids", "attention_mask", "labels"])
+        return processed_dataset
